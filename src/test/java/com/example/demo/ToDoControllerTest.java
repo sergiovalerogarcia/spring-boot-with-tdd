@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,14 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ToDoControllerTest {
+
     @Autowired
     MockMvc mockMvc;
 
@@ -37,5 +39,19 @@ public class ToDoControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/todos")
                 .contentType(MediaType.APPLICATION_JSON)
         ).andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    void addToDo() throws Exception {
+        ToDo newTodo = new ToDo(1L,"Eat thrice",true);
+        when(toDoService.save(any(ToDo.class))).thenReturn(newTodo);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/todos/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newTodo))
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(newTodo.getId()));
     }
 }
