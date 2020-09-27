@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
@@ -37,5 +39,18 @@ public class ToDoServiceTest {
         assertEquals(newTodo.getText(), saveTodo.getText());
         assertEquals(newTodo.isCompleted(), saveTodo.isCompleted());
         assertEquals(newTodo.getId(), saveTodo.getId());
+    }
+
+    @Test
+    void deleteToDo(){
+        ToDoService toDoService = new ToDoService(toDoRepository);
+        toDoService.save(new ToDo(1L,"Eat thrice",true));
+        List<ToDo> listTodoInit = toDoService.findAll();
+        assertEquals(listTodoInit.toArray().length, 1);
+
+        toDoService.deleteById(1L);
+        List<ToDo> listTodo = toDoService.findAll();
+
+        assertEquals(listTodo.toArray().length, 0);
     }
 }

@@ -19,4 +19,11 @@ public class ToDoService {
     public ToDo save(ToDo todo) {
         return toDoRepository.save(todo);
     }
+    public boolean deleteById(Long id) {
+        if (toDoRepository.existsById(id)) {
+            toDoRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
 }

@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
@@ -53,5 +54,17 @@ public class ToDoControllerTest {
                 .content(objectMapper.writeValueAsString(newTodo))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").value(newTodo.getId()));
+    }
+
+    @Test
+    void deleteToDo() throws Exception {
+        ToDo newTodo = new ToDo(1L,"Eat thrice",true);
+        toDoService.save(newTodo);
+        when(toDoService.deleteById(1L)).thenReturn(true);
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/todos/delete/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }
